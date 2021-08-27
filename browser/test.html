@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>js-aes-examples</title>
+  </head>
+  <body>
+    <script
+      type="text/javascript"
+      src="./bower_components/crypto-js/crypto-js.js"
+    ></script>
+    <script type="text/javascript">
+      let key = CryptoJS.enc.Hex.parse("e43ee68382dc550fbd1d329486febdd4");
+      let iv = CryptoJS.enc.Hex.parse("ddffc44a93503156abb36e9bbca876f8");
+      let pText = "AES 算法基于 Java 实战演示";
+
+      let encrypted = CryptoJS.AES.encrypt(pText, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      });
+
+      console.log(encrypted.ciphertext.toString()); // toHex
+
+      let decrypted = CryptoJS.AES.decrypt(encrypted, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      });
+
+      console.log(CryptoJS.enc.Utf8.stringify(decrypted)); // 转为 String
+    </script>
+  </body>
+</html>
