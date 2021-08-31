@@ -1,6 +1,4 @@
-本篇将对之前所属的 AES 算法在浏览器端的 JavaScript 脚本语言中做实战讲解，由于 ECB 工作模式相对其他工作模式安全性低（不推荐使用），本文将不对其进行展示，如在工作中确实需要使用，请自行实现。
-
-为什么要强调是浏览器端？因为后面还会对 Node 环境下 AES 算法应用单独做个实战演示，如果你是在 Node 环境中使用的，请移步。
+本篇将对 AES 算法在浏览器端的 JavaScript 语言中应用做实战讲解，为什么要强调是浏览器端？因为后面还会对 Node 环境下 AES 算法应用单独做个实战演示，如果你是在 Node 环境中使用的，请移步。
 
 因为 JavaScript 标准库对 AES 算法支持有限，这里会第三方库 https://github.com/brix/crypto-js 做讲解（后面简称 CryptoJS），也推荐在正式环境中使用。由于篇幅限制，所有的演示代码将只展示关键步骤。
 
@@ -81,3 +79,41 @@ let encrypted = CryptoJS.AES.encrypt(plainData, key, {
 ```
 
 咦？这里怎么不支持 Java 标准中的 PKCS5？请注意 PKCS5 是 PKCS7 的子集，不要再纠结了，Java 使用的 PKCS5 也就是在使用 PKCS7。还在纠结的话请移步前面的基础部分《AES 算法（三）填充模式》。
+
+**综合实战**
+
+基本使用在上面已经讲解完毕了，但是为防止还是有同学不知道如何上手，我们来全面的实战演示一下。
+
+现实中常见的加密需求一定是要和后端同学联动的，这里就以之前的 Java 实战篇所使用的参数相同为基础，来看看我们是否能得到相同的加密字符串，并且同样也能解密出来。
+
+核心代码如下，如果想自己运行看看并且调试一下，请移步 https://github.com/aurthurxlc/js-aes-examples
+
+```javascript
+let key = CryptoJS.enc.Hex.parse("e43ee68382dc550fbd1d329486febdd4");
+let iv = CryptoJS.enc.Hex.parse("ddffc44a93503156abb36e9bbca876f8");
+let pText = "AES 算法基于 Java 实战演示";
+
+let encrypted = CryptoJS.AES.encrypt(pText, key, {
+  iv: iv,
+  mode: CryptoJS.mode.CBC,
+  padding: CryptoJS.pad.Pkcs7,
+});
+
+console.log(encrypted.ciphertext.toString()); // toHex
+
+let decrypted = CryptoJS.AES.decrypt(encrypted, key, {
+  iv: iv,
+  mode: CryptoJS.mode.CBC,
+  padding: CryptoJS.pad.Pkcs7,
+});
+
+console.log(CryptoJS.enc.Utf8.stringify(decrypted)); // 转为 String
+```
+
+在 console 控制台查看结果，可以看跟 Java 的输出结果是一模一样的：
+
+```javascript
+e8aa678c21aa028988cd74ee2835344519014a4e9365cb8dda7cf24bfe95dfdf0e047cf979587b02500ccad15415b1c3
+
+AES 算法基于 Java 实战演示
+```
